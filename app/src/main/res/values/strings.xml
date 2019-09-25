@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">EParkingApp</string>
+    <string name="password">Password</string>
+    <string name="email_address">Email address</string>
+    <string name="login">Sing In</string>
+    <string name="register">Register</string>
+    <string name="user_name">User Name</string>
+    <string name="licence_plate_number">Licence plate number :</string>
+    <string name="bike_name">Bike Name :</string>
 </resources>
