@@ -5,6 +5,6 @@
     <string name="login">Sing In</string>
     <string name="register">Register</string>
     <string name="user_name">User Name</string>
-    <string name="licence_plate_number">Licence plate number :</string>
-    <string name="bike_name">Bike Name :</string>
+    <string name="licence_plate_number">Licence plate number</string>
+    <string name="bike_name">Bike Name</string>
 </resources>

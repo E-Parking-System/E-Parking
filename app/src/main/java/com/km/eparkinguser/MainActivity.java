@@ -1,11 +1,11 @@
 package com.km.eparkinguser;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -13,11 +13,9 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
-import java.lang.ref.SoftReference;
-
 public class MainActivity extends AppCompatActivity {
     private ImageView qrCodeImage;
-    private EditText userName, bikeName, bikeNumber;
+    private TextView userName, bikeName, bikeNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setData() {
-        String[] userDetails = new AppPreferences(this).getUserDetails().split(",");
+        String[] userDetails = new AppPreferences(this).getUserDetails().split("~/");
 
         String name = userDetails[0];
         String bikeModel = userDetails[2];

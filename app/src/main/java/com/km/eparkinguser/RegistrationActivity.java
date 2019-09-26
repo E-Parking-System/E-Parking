@@ -1,16 +1,34 @@
 package com.km.eparkinguser;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 public class RegistrationActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText userName, userEmail, userPassword, bikeName, bikeNumber;
     private Button loginButton, registerButton;
+    private FirebaseAuth firebaseAuth;
+    private DatabaseReference firebaseDatabase;
+    private LoadingAlert loader;
+    private String TAG = "RegistrationActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +47,10 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         bikeNumber = findViewById(R.id.bike_number);
         loginButton = findViewById(R.id.login_button);
         registerButton = findViewById(R.id.register_button);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        loader = new LoadingAlert();
     }
 
     private void setListeners() {
@@ -42,9 +64,9 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             userName.setError("Enter user name");
             return false;
         }
-        if (userEmail.getText().toString().trim().isEmpty()) {
+        if (!isEmailValid(userEmail.getText().toString())) {
             userEmail.requestFocus();
-            userEmail.setError("Enter email");
+            userEmail.setError("Enter valid email");
             return false;
         }
         if (userPassword.getText().toString().trim().isEmpty()) {
@@ -66,10 +88,42 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void performRegistration() {
-        String userDetailsString = userName.toString() + userEmail.toString() + bikeName.toString() + bikeNumber;
+        String userDetailsString = userName.getText().toString() + "~/" + userEmail.getText().toString() + "~/" + bikeName.getText().toString() + "~/" + bikeNumber.getText().toString();
         AppPreferences appPreferences = new AppPreferences(this);
         appPreferences.setUserDetails(userDetailsString);
-        startActivity(new Intent(this,MainActivity.class));
+
+        loader.show(getSupportFragmentManager(), "loader");
+        firebaseAuth.createUserWithEmailAndPassword(userEmail.getText().toString(), userPassword.getText().toString())
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        loader.dismiss();
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "signInWithEmail:success");
+                            addUsersDetails();
+                        } else {
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            Toast.makeText(RegistrationActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+
+    }
+
+
+    private void addUsersDetails() {
+        String key = firebaseAuth.getCurrentUser().getUid();
+        UserModel user = new UserModel();
+        user.setUserEmail(firebaseAuth.getCurrentUser().getEmail());
+        user.setUserName(userName.getText().toString());
+        user.setVehicleName(bikeName.getText().toString());
+        user.setVehicleNumber(bikeNumber.getText().toString());
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/User/" + key, user);
+        firebaseDatabase.updateChildren(childUpdates);
+        startActivity(new Intent(this, MainActivity.class));
     }
 
     @Override
@@ -85,5 +139,10 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                 }
                 break;
         }
+    }
+
+    private boolean isEmailValid(String email) {
+        Pattern emailPattern = Pattern.compile("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]{2}+[a-z]*");
+        return emailPattern.matcher(email).matches() && !email.trim().isEmpty();
     }
 }
