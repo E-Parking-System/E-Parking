@@ -9,16 +9,14 @@ import android.content.SharedPreferences;
  * Avantari Technologies
  * mirza@avantari.org
  */
-public class AppPreferences {
-    private Context context;
+class AppPreferences {
     private SharedPreferences _sharedPrefs;
     private SharedPreferences.Editor _prefsEditor;
 
     private String APP_SHARED_PREFS = "com.km.eparkinguser.preferences";
     private String USER_DETAILS = APP_SHARED_PREFS + ".userdetails";
 
-    public AppPreferences(Context context) {
-        this.context = context;
+    AppPreferences(Context context) {
         this._sharedPrefs = context.getSharedPreferences(
                 APP_SHARED_PREFS,
                 Activity.MODE_PRIVATE
@@ -27,15 +25,15 @@ public class AppPreferences {
         this._prefsEditor.apply();
     }
 
+    String getUserDetails() {
+        return _sharedPrefs.getString(USER_DETAILS, null);
+    }
+
     /**
      * User details input format should follow username,email,bikename,licencenumber
      */
-    public void setUserDetails(String userDetails) {
+    void setUserDetails(String userDetails) {
         _prefsEditor.putString(USER_DETAILS, userDetails);
         _prefsEditor.commit();
-    }
-
-    public String getUserDetails() {
-        return _sharedPrefs.getString(USER_DETAILS, null);
     }
 }

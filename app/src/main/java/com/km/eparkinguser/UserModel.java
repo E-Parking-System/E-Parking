@@ -5,7 +5,7 @@ package com.km.eparkinguser;
  * Avantari Technologies
  * mirza@avantari.org
  */
-public class UserModel {
+class UserModel {
     private String userName;
     private String userEmail;
     private String vehicleName;

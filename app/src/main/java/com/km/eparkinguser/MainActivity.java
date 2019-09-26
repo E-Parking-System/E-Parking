@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         bikeName.setText(bikeModel);
         bikeNumber.setText(licenceNumber);
 
-        generateAndSetQRCode(name + bikeModel + licenceNumber);
+        generateAndSetQRCode(name + "~/" + bikeModel + "~/" + licenceNumber);
     }
 
 
